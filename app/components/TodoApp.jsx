@@ -2,6 +2,7 @@ var React = require('react');
 var TodoList = require('TodoList');
 var AddTodo = require('AddTodo');
 var TodoSearch = require('TodoSearch');
+var uuid = require('node-uuid');
 
 var TodoApp = React.createClass({
   getInitialState: function () {
@@ -10,27 +11,49 @@ var TodoApp = React.createClass({
       searchText: '',
       todos: [
         {
-          id: 1,
-          text: 'some'
-        },
-        {
-          id: 2,
-          text: 'kamehameha'
-        },
-        {
-          id: 3,
-          text: 'vegeta'
-        },
-        {
-          id: 4,
-          text: 'assasins creed'
+          id: uuid(),
+          text: 'Walk the dog',
+          completed: false
+        }, {
+          id: uuid(),
+          text: 'Clean the yard',
+          completed: true
+        }, {
+          id: uuid(),
+          text: 'Leave mail on porch',
+          completed: true
+        }, {
+          id: uuid(),
+          text: 'Play video games',
+          completed: false
         }
       ]
     };
   },
 
   handleAddTodo: function (text) {
-    console.log(text);
+    this.setState({
+      todos: [
+        ...this.state.todos,
+        {
+          id: uuid(),
+          text: text,
+          completed: false
+        }
+      ]
+    });
+  },
+
+  handleToggle: function (id) {
+    var updatedTodos = this.state.todos.map((todo) => {
+      if (todo.id === id) {
+        todo.completed = !todo.completed;
+      }
+
+      return todo;
+    });
+
+    this.setState({todos: updatedTodos});
   },
 
   handleSearch: function (showCompleted, searchText) {
@@ -42,12 +65,15 @@ var TodoApp = React.createClass({
 
   render: function () {
     var {todos} = this.state;
+
     return (
       <div>
-        <TodoSearch onSearch = {this.handleSearch} />
-        <TodoList todos = {todos} />
-        <AddTodo onAddTodo = {this.handleAddTodo} />
+        <TodoSearch onSearch={this.handleSearch}/>
+        <TodoList todos={todos} onToggle={this.handleToggle}/>
+        <AddTodo onAddTodo={this.handleAddTodo}/>
       </div>
-    );
+    )
   }
 });
+
+module.exports = TodoApp;
